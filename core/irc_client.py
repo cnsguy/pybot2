@@ -98,6 +98,8 @@ class IrcClient:
         self.connection.writer.write(line.encode("u8", "ignore") + b"\r\n")
 
     def send_message(self, channel: str, message: str) -> None:
+        assert self.connection is not None
+
         for part in textwrap_wrap(message, width=300):
             self.message_queue.append((channel, part))
 
