@@ -104,7 +104,7 @@ class IrcBot(IrcClient):
         if self.debug_channel is not None and self.is_connected():
             self.send_message(
                 self.debug_channel,
-                f"[ERROR] {context}: {self.tail_lines(trace, 10)}",
+                f"[ERROR] {context}: {self.tail_lines(trace, 3)}",
             )
 
     async def handle_irc_command(self, line: IrcLine) -> None:
