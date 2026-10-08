@@ -28,4 +28,4 @@ class ModuleMain(Module):
         args: list[str],
     ) -> None:
         nick = args[0]
-        self.bot.send_line(f"NICK {nick}")
+        await self.bot.send_line(f"NICK {nick}")

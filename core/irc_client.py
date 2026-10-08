@@ -93,9 +93,10 @@ class IrcClient:
 
             self.buf += pkt
 
-    def send_line(self, line: str) -> None:
+    async def send_line(self, line: str) -> None:
         assert self.connection is not None
         self.connection.writer.write(line.encode("u8", "ignore") + b"\r\n")
+        await self.connection.writer.drain()
 
     def send_message(self, channel: str, message: str) -> None:
         assert self.connection is not None
@@ -111,7 +112,7 @@ class IrcClient:
         while True:
             if len(self.message_queue) > 0:
                 channel, message = self.message_queue.pop(0)
-                self.send_line(f"PRIVMSG {channel} :{message}")
+                await self.send_line(f"PRIVMSG {channel} :{message}")
 
             await asyncio_sleep(1)
 
@@ -121,7 +122,7 @@ class IrcClient:
 
             if line.cmd == "PING":
                 pong_payload = " ".join(line.args)
-                self.send_line(f"PONG :{pong_payload}")
+                await self.send_line(f"PONG :{pong_payload}")
             elif line.cmd == "NICK":
                 if (
                     isinstance(line.sender, IrcSenderUser)
@@ -133,7 +134,7 @@ class IrcClient:
 
     async def run_ping(self) -> None:
         while True:
-            self.send_line("PING :pybot")
+            await self.send_line("PING :pybot")
             await asyncio_sleep(60)
 
     def is_connected(self) -> bool:
@@ -144,9 +145,9 @@ class IrcClient:
             try:
                 with await self.connect() as connection:
                     self.connection = connection
-                    self.send_line(f"CAP REQ :account-tag")
-                    self.send_line(f"CAP REQ :sasl")
-                    self.send_line(f"CAP END")
+                    await self.send_line(f"CAP REQ :account-tag")
+                    await self.send_line(f"CAP REQ :sasl")
+                    await self.send_line(f"CAP END")
 
                     sasl_user = self.sasl_user
                     sasl_password = self.sasl_password
@@ -164,11 +165,11 @@ class IrcClient:
                             f"{self.sasl_user}\0{self.sasl_user}\0{self.sasl_password}"
                         )
                         encoded = b64encode(auth.encode()).decode()
-                        self.send_line(f"AUTHENTICATE PLAIN")
-                        self.send_line(f"AUTHENTICATE {encoded}")
+                        await self.send_line(f"AUTHENTICATE PLAIN")
+                        await self.send_line(f"AUTHENTICATE {encoded}")
 
-                    self.send_line(f"USER {self.ident} 0 * :{self.real_name}")
-                    self.send_line(f"NICK {self.nick}")
+                    await self.send_line(f"USER {self.ident} 0 * :{self.real_name}")
+                    await self.send_line(f"NICK {self.nick}")
                     await asyncio_gather(
                         self.run_recv(), self.run_ping(), self.run_message_queue()
                     )

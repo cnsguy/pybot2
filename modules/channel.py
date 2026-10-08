@@ -39,7 +39,7 @@ class ModuleMain(Module):
 
     async def handle_connect(self, line: IrcLine) -> None:
         for channel in self.config.channels:
-            self.bot.send_line(f"JOIN {channel}")
+            await self.bot.send_line(f"JOIN {channel}")
 
     async def handle_join(
         self,
@@ -49,7 +49,7 @@ class ModuleMain(Module):
         args: list[str],
     ) -> None:
         target_channel = args[0]
-        self.bot.send_line(f"JOIN {target_channel}")
+        await self.bot.send_line(f"JOIN {target_channel}")
 
         if target_channel not in self.config.channels:
             self.config.channels.append(target_channel)
@@ -64,7 +64,7 @@ class ModuleMain(Module):
         args: list[str],
     ) -> None:
         target_channel = channel if len(args) == 0 else args[0]
-        self.bot.send_line(f"PART {target_channel}")
+        await self.bot.send_line(f"PART {target_channel}")
 
         if target_channel in self.config.channels:
             self.config.channels.remove(target_channel)
