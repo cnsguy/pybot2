@@ -1,0 +1,1 @@
+rss module sends privmsgs that are too long to fit in an IRC line
