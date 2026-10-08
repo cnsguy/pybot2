@@ -1,8 +1,8 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Callable, Awaitable, Optional, Any, TypeVar
-from os.path import join as path_join
 from core.irc_line import IrcLine, IrcSenderUser
 from core.config import ConfT, read_config, write_config
+from typing import TYPE_CHECKING, Callable, Awaitable, Optional, Any, TypeVar
+from os.path import join as path_join
 from pydantic import BaseModel
 
 if TYPE_CHECKING:
