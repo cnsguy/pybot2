@@ -35,10 +35,10 @@ class ModuleMain(Module):
                 help.append(f"[{module_name}] {commands}")
 
             help_message = " ".join(help)
-            self.bot.send_message(channel, help_message)
+            await self.bot.send_message(channel, help_message)
             return
         else:
             for module_name, module in self.bot.modules.items():
                 if command_name in module.commands:
                     command = module.commands[command_name]
-                    self.bot.send_message(channel, command.help())
+                    await self.bot.send_message(channel, command.help())

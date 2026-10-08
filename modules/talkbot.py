@@ -83,12 +83,9 @@ class ModuleMain(Module):
         if channel == self.bot.nick:
             channel = line.sender.nick
 
-        self.run_talk(channel, message)
-
-    def run_talk(self, channel: str, message: str) -> None:
         if len(self.config.messages) > 0:
             response = choice(self.config.messages)
-            self.bot.send_message(channel, response)
+            await self.bot.send_message(channel, response)
 
         if message not in self.message_set:
             self.message_set.add(message)
@@ -101,12 +98,12 @@ class ModuleMain(Module):
         pattern = args[0]
 
         if pattern in self.config.ignored:
-            self.bot.send_message(channel, "Pattern already exists.")
+            await self.bot.send_message(channel, "Pattern already exists.")
             return
 
         self.config.ignored.append(pattern)
         self.write_config(self.config)
-        self.bot.send_message(channel, "Pattern added.")
+        await self.bot.send_message(channel, "Pattern added.")
 
     async def handle_talkbot_unignore(
         self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
@@ -114,9 +111,9 @@ class ModuleMain(Module):
         pattern = args[0]
 
         if pattern not in self.config.ignored:
-            self.bot.send_message(channel, "Pattern doesn't exist.")
+            await self.bot.send_message(channel, "Pattern doesn't exist.")
             return
 
         self.config.ignored.remove(pattern)
         self.write_config(self.config)
-        self.bot.send_message(channel, "Pattern deleted.")
+        await self.bot.send_message(channel, "Pattern deleted.")

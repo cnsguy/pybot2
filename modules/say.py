@@ -32,11 +32,11 @@ class ModuleMain(Module):
     async def handle_say(
         self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
     ) -> None:
-        self.bot.send_message(channel, " ".join(args))
+        await self.bot.send_message(channel, " ".join(args))
 
     async def handle_say_to(
         self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
     ) -> None:
         channel = args[0]
         message = " ".join(args[1:])
-        self.bot.send_message(channel, message)
+        await self.bot.send_message(channel, message)

@@ -12,6 +12,7 @@ from asyncio import (
     sleep as asyncio_sleep,
     wait_for,
 )
+from textwrap import wrap as textwrap_wrap
 
 
 class Connection:
@@ -94,8 +95,10 @@ class IrcClient:
         assert self.connection is not None
         self.connection.writer.write(line.encode("u8", "ignore") + b"\r\n")
 
-    def send_message(self, channel: str, message: str) -> None:
-        self.send_line(f"PRIVMSG {channel} :{message}")
+    async def send_message(self, channel: str, message: str) -> None:
+        for part in textwrap_wrap(message, width=450):
+            self.send_line(f"PRIVMSG {channel} :{part}")
+            await asyncio_sleep(1)
 
     # Only used in IrcBot
     async def handle_irc_line(self, line: IrcLine) -> None:

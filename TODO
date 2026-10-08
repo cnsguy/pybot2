@@ -1,7 +1,3 @@
 TODO
  - higher level irc events
   -> so privmsg could have a message.send_reply()
-
- - send_message
-  -> break up long messages
-  -> asyncio sleep
