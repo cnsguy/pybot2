@@ -8,7 +8,8 @@ from modules.say import ModuleMain as SayModuleMain
 from modules.help import ModuleMain as HelpModuleMain
 from modules.word_trigger import ModuleMain as WordTriggerModuleMain
 from modules.nick import ModuleMain as NickModuleMain
-from typing import Optional
+from typing import Optional, cast
+from sys import modules as sys_modules
 
 
 class IrcBot(IrcClient):
@@ -68,21 +69,13 @@ class IrcBot(IrcClient):
         return False
 
     def load_module(self, module_name: str) -> None:
-        module_map = {
-            "talkbot": TalkbotModuleMain,
-            "channel": ChannelModuleMain,
-            "say": SayModuleMain,
-            "help": HelpModuleMain,
-            "word_trigger": WordTriggerModuleMain,
-            "nick": NickModuleMain,
-        }
+        if module_name in self.modules:
+            return
 
-        module = module_map.get(module_name, None)
-
-        if module is None:
-            raise ValueError(f"Invalid module {module_name} specified")
-
-        self.modules[module_name] = module(module_name, self)
+        module = __import__(f"modules.{module_name}")
+        module = getattr(module, module_name)
+        module_main = getattr(module, "ModuleMain")
+        self.modules[module_name] = module_main(module_name, self)
 
     def remove_module(self, module_name: str) -> None:
         module = self.modules.get(module_name, None)
@@ -91,6 +84,7 @@ class IrcBot(IrcClient):
             return
 
         module.unload()
+        del sys_modules[f"modules.{module_name}"]
         del self.modules[module_name]
 
     def load_modules(self) -> None:
@@ -117,7 +111,12 @@ class IrcBot(IrcClient):
         cmd = cmd[len(self.command_prefix) :]
 
         for key in list(self.modules.keys()):
-            module = self.modules[key]
+            module = self.modules.get(key, None)
+
+            # needed in case module gets removed at runtime
+            if module is None:
+                continue
+
             await module.handle_irc_command(line.tags, line.sender, cmd, channel, args)
 
     async def handle_irc_line(self, line: IrcLine) -> None:
@@ -131,5 +130,10 @@ class IrcBot(IrcClient):
         print(line)
 
         for key in list(self.modules.keys()):
-            module = self.modules[key]
+            module = self.modules.get(key, None)
+
+            # needed in case module gets removed at runtime
+            if module is None:
+                continue
+
             await module.handle_irc_line(line)
