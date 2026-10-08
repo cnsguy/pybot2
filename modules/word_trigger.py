@@ -83,6 +83,7 @@ class ModuleMain(Module):
         channel = line.args[0]
         message = line.args[1]
 
+        # XXX hack
         if channel == self.bot.nick:
             channel = line.sender.nick
 
