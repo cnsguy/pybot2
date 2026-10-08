@@ -1,0 +1,26 @@
+{
+    "nick": "pybot",
+    "ident": "bot",
+    "real_name": "Python IRC Bot",
+    "modules": [
+        "channel",
+        "say",
+        "help",
+        "word_trigger",
+        "nick",
+        "module",
+        "talkbot",
+        "qchoice",
+        "anime"
+    ],
+    "admin_accounts": [
+    ],
+    "admin_hosts": [
+    ],
+    "data_directory": "Libera",
+    "debug_channel": "#pybot-dev",
+    "host": "irc.libera.chat",
+    "port": 6697,
+    "use_ssl": true,
+    "command_prefix": "!"
+}
