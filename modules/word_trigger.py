@@ -4,7 +4,7 @@ from core.module import Module
 from core.irc_line import IrcLine, IrcSenderUser
 from core.config import Config
 from random import choice
-from re import match as re_match, sub as re_sub, search as re_search, finditer as re_finditer
+from re import match as re_match, sub as re_sub, finditer as re_finditer
 
 if TYPE_CHECKING:
     from core.irc_bot import IrcBot
@@ -69,11 +69,9 @@ class ModuleMain(Module):
         for entry in self.config.patterns:
             try:
                 if re_match(entry.sender_pattern, sender_repr):
-                    if re_search(entry.word_pattern, message):
-                        for item in re_finditer(entry.word_pattern, message):
-                            item = item.group(0)
-                            response = re_sub(entry.word_pattern, entry.response, item)
-                            self.bot.send_message(channel, response)
+                    for matching in re_finditer(entry.word_pattern, message):
+                        response = re_sub(entry.word_pattern, entry.response, matching.group(0))
+                        self.bot.send_message(channel, response)
 
             except Exception as err:
                 self.bot.send_message(channel, f"Error running word trigger '{entry}': {err}")
