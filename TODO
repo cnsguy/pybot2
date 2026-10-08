@@ -1,0 +1,13 @@
+TODO
+ - higher level irc events
+  -> so privmsg could have a message.send_reply()
+
+ - rss feed module
+  -> cves
+  -> asyncio.create_task() + cancel
+  -> def run_modules(self) in irc_bot
+   - tasks can be cancel()led
+   - https://docs.python.org/3/library/asyncio-exceptions.html#asyncio.CancelledError
+
+ - module module
+ - optional SASL auth

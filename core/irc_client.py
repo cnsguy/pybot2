@@ -1,0 +1,127 @@
+from __future__ import annotations
+from core.irc_line import IrcLine, IrcSenderUser, parse_line
+from typing import Optional, Self
+from ssl import create_default_context as ssl_create_default_context
+from sys import stderr
+from asyncio import (
+    StreamReader,
+    StreamWriter,
+    open_connection,
+    gather as asyncio_gather,
+    sleep as asyncio_sleep,
+    wait_for,
+)
+
+
+class Connection:
+    reader: StreamReader
+    writer: StreamWriter
+
+    def __init__(self, reader: StreamReader, writer: StreamWriter) -> None:
+        self.reader = reader
+        self.writer = writer
+
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.writer.close()
+
+
+class IrcClient:
+    nick: str
+    ident: str
+    real_name: str
+    buf: bytearray
+    connection: Optional[Connection]
+
+    def __init__(
+        self, nick: str, ident: str, real_name: str, host: str, port: int, use_ssl: bool
+    ) -> None:
+        self.nick = nick
+        self.ident = ident
+        self.real_name = real_name
+        self.host = host
+        self.port = port
+        self.use_ssl = use_ssl
+        self.buf = bytearray()
+        self.connection = None
+
+    async def connect(self) -> Connection:
+        if self.use_ssl:
+            ssl_ctx = ssl_create_default_context()
+        else:
+            ssl_ctx = None
+
+        reader, writer = await wait_for(
+            open_connection(self.host, self.port, ssl=ssl_ctx), timeout=5
+        )
+
+        return Connection(reader, writer)
+
+    async def read_line(self) -> IrcLine:
+        assert self.connection is not None
+
+        while True:
+            nl_pos = self.buf.find(b"\r\n")
+
+            if nl_pos != -1:
+                line = self.buf[:nl_pos].decode("u8", "ignore")
+                self.buf = self.buf[nl_pos + 2 :]
+                return parse_line(line)
+
+            pkt = await self.connection.reader.read(512)
+
+            if len(pkt) == 0:
+                raise ConnectionResetError()
+
+            self.buf += pkt
+
+    def send_line(self, line: str) -> None:
+        assert self.connection is not None
+        self.connection.writer.write(line.encode("u8", "ignore") + b"\r\n")
+
+    def send_message(self, channel: str, message: str) -> None:
+        self.send_line(f"PRIVMSG {channel} :{message}")
+
+    # Only used in IrcBot
+    async def handle_irc_line(self, line: IrcLine) -> None:
+        pass
+
+    async def run_recv(self) -> None:
+        while True:
+            line = await wait_for(self.read_line(), timeout=120)
+
+            if line.cmd == "PING":
+                pong_payload = " ".join(line.args)
+                self.send_line(f"PONG :{pong_payload}")
+            elif line.cmd == "NICK":
+                if (
+                    isinstance(line.sender, IrcSenderUser)
+                    and line.sender.nick == self.nick
+                ):
+                    self.nick = line.args[0]
+
+            await self.handle_irc_line(line)
+
+    async def run_ping(self) -> None:
+        while True:
+            self.send_line("PING :pybot")
+            await asyncio_sleep(60)
+
+    async def run(self) -> None:
+        while True:
+            try:
+                with await self.connect() as connection:
+                    self.connection = connection
+                    self.send_line(f"CAP REQ :account-tag")
+                    self.send_line(f"CAP END")
+                    self.send_line(f"USER {self.ident} 0 * :{self.real_name}")
+                    self.send_line(f"NICK {self.nick}")
+                    await asyncio_gather(self.run_recv(), self.run_ping())
+            except ConnectionResetError:
+                print("[ERROR] Connection reset by peer", file=stderr)
+            except TimeoutError:
+                print("[ERROR] Connection timed out", file=stderr)
+
+            await asyncio_sleep(10)
