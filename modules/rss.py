@@ -4,7 +4,7 @@ from core.module import Module
 from core.irc_line import IrcLine, IrcSenderUser
 from core.config import Config
 from asyncio import Task, create_task, sleep as asyncio_sleep, CancelledError
-from feedparser import parse as feedparser_parse
+from feedparser import parse as feedparser_parse  # type: ignore[import-untyped]
 from re import sub as re_sub
 
 if TYPE_CHECKING:
