@@ -3,7 +3,8 @@ from core.irc_client import IrcClient
 from core.irc_line import IrcLine, IrcSenderUser
 from core.module import Module
 from typing import Optional, cast
-from sys import modules as sys_modules
+from sys import modules as sys_modules, stderr
+from traceback import format_exception
 
 
 class IrcBot(IrcClient):
@@ -12,6 +13,7 @@ class IrcBot(IrcClient):
     admin_hosts: list[str]
     command_prefix: str
     data_directory: str
+    debug_channel: Optional[str]
     modules: dict[str, Module]
 
     def __init__(
@@ -29,6 +31,7 @@ class IrcBot(IrcClient):
         admin_hosts: list[str],
         command_prefix: str,
         data_directory: str,
+        debug_channel: Optional[str],
     ) -> None:
         super().__init__(
             nick,
@@ -45,6 +48,7 @@ class IrcBot(IrcClient):
         self.admin_hosts = admin_hosts
         self.command_prefix = command_prefix
         self.data_directory = data_directory
+        self.debug_channel = debug_channel
         self.modules = {}
         self.load_modules()
 
@@ -85,6 +89,24 @@ class IrcBot(IrcClient):
         for module_name in self.module_names:
             self.load_module(module_name)
 
+    @staticmethod
+    def format_traceback(err: BaseException) -> str:
+        return "".join(format_exception(err)).strip()
+
+    @staticmethod
+    def tail_lines(text: str, count: int) -> str:
+        return "\n".join(text.splitlines()[-count:])
+
+    def report_error(self, context: str, err: BaseException) -> None:
+        trace = self.format_traceback(err)
+        print(f"[ERROR] {context}\n{trace}", file=stderr)
+
+        if self.debug_channel is not None and self.is_connected():
+            self.send_message(
+                self.debug_channel,
+                f"[ERROR] {context}: {self.tail_lines(trace, 10)}",
+            )
+
     async def handle_irc_command(self, line: IrcLine) -> None:
         assert line.sender is not None, "None sender in a PRIVMSG"
 
@@ -111,7 +133,14 @@ class IrcBot(IrcClient):
             if module is None:
                 continue
 
-            await module.handle_irc_command(line.tags, line.sender, cmd, channel, args)
+            try:
+                await module.handle_irc_command(
+                    line.tags, line.sender, cmd, channel, args
+                )
+            except Exception as err:
+                self.report_error(
+                    f"module '{key}' command '{cmd}' for {line.sender.nick}", err
+                )
 
     async def handle_irc_line(self, line: IrcLine) -> None:
         if (
@@ -130,4 +159,7 @@ class IrcBot(IrcClient):
             if module is None:
                 continue
 
-            await module.handle_irc_line(line)
+            try:
+                await module.handle_irc_line(line)
+            except Exception as err:
+                self.report_error(f"module '{key}' on {line.cmd}", err)

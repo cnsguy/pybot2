@@ -21,6 +21,7 @@ class BotConfig(Config):
     data_directory: str = "Libera"
     sasl_user: Optional[str] = None
     sasl_password: Optional[str] = None
+    debug_channel: Optional[str] = None
 
 
 async def main() -> None:
@@ -44,6 +45,7 @@ async def main() -> None:
         config.admin_hosts,
         config.command_prefix,
         config.data_directory,
+        config.debug_channel,
     )
     await bot.run()
 
