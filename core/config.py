@@ -8,10 +8,12 @@ from json import loads as json_loads, dumps as json_dumps, JSONEncoder
 
 class ConfigEncoder(JSONEncoder):
     def default(self, obj: Any) -> Any:
-        if isinstance(obj, object):
+        if isinstance(obj, set):
+            return list(obj)
+        elif isinstance(obj, object):
             return obj.__dict__
-
-        return super().default(obj)
+        else:
+            return super().default(obj)
 
 
 class Config:

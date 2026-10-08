@@ -122,6 +122,9 @@ class IrcClient:
             self.send_line("PING :pybot")
             await asyncio_sleep(60)
 
+    def is_connected(self) -> bool:
+        return self.connection is not None
+
     async def run(self) -> None:
         while True:
             try:
