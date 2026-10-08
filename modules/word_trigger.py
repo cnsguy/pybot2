@@ -4,7 +4,7 @@ from core.module import Module
 from core.irc_line import IrcLine, IrcSenderUser
 from core.config import Config
 from random import choice
-from re import match as re_match, sub as re_sub
+from re import match as re_match, sub as re_sub, search as re_search
 
 if TYPE_CHECKING:
     from core.irc_bot import IrcBot
@@ -69,7 +69,7 @@ class ModuleMain(Module):
         for entry in self.config.patterns:
             try:
                 if re_match(entry.sender_pattern, sender_repr):
-                    if re_match(entry.word_pattern, message):
+                    if re_search(entry.word_pattern, message):
                         response = re_sub(entry.word_pattern, entry.response, message)
                         self.bot.send_message(channel, response)
 
