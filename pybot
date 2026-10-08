@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
+cd "$(dirname $BASH_SOURCE)"
 . venv/bin/activate
 exec python main.py "$@"
