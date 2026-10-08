@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 from core.module import Module
 from core.irc_line import IrcLine, IrcSenderUser
-from core.config import Config
 from random import choice
 from re import match as re_match, sub as re_sub
 

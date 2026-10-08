@@ -9,16 +9,7 @@ if TYPE_CHECKING:
 
 
 class ModuleConfig(Config):
-    channels: list[str]
-
-    def __init__(self, values: dict[Any, Any]) -> None:
-        channels = values.get("channels", [])
-        assert type(channels) == list, "channels should be a list of str"
-
-        for val in channels:
-            assert type(val) == str, "channels should be a list of str"
-
-        self.channels = channels
+    channels: list[str] = []
 
 
 class ModuleMain(Module):

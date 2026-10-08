@@ -4,6 +4,7 @@ from typing import Any, TypeVar
 from pathlib import Path
 from os.path import dirname, exists as path_exists
 from json import loads as json_loads, dumps as json_dumps, JSONEncoder
+from pydantic import BaseModel
 
 
 class ConfigEncoder(JSONEncoder):
@@ -16,9 +17,8 @@ class ConfigEncoder(JSONEncoder):
             return super().default(obj)
 
 
-class Config:
-    def __init__(self, values: dict[Any, Any]) -> None:
-        pass
+class Config(BaseModel):
+    pass
 
 
 ConfT = TypeVar("ConfT", bound=Config)
@@ -36,10 +36,10 @@ def read_config(file_path: str, config_class: type[ConfT]) -> ConfT:
     if path_exists(file_path):
         with open(file_path, "r") as f:
             json = json_loads(f.read())
-            obj = config_class(json)
+            obj = config_class.model_validate(json)
             return obj
     else:
-        obj = config_class({})
+        obj = config_class.model_validate({})
         write_config(file_path, obj)
         return obj
 

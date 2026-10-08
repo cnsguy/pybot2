@@ -11,51 +11,14 @@ if TYPE_CHECKING:
     from core.irc_bot import IrcBot
 
 
-class ModuleConfigEntry:
+class ModuleConfigEntry(Config):
     channel: str
     link: str
 
-    def __init__(self, channel: str, link: str) -> None:
-        self.channel = channel
-        self.link = link
-
 
 class ModuleConfig(Config):
-    entries: list[ModuleConfigEntry]
-    sent: dict[str, set[str]]
-
-    def __init__(self, values: dict[Any, Any]) -> None:
-        entries = values.get("entries", [])
-        parsed_entries: list[ModuleConfigEntry] = []
-        assert type(entries) == list, "entries should be a list of dict"
-
-        for val in entries:
-            assert type(val) == dict, "entries should be a list of dict"
-
-            channel = val.get("channel", None)
-            assert type(channel) == str, "entries entry should have a channel str"
-
-            link = val.get("link", None)
-            assert type(link) == str, "entries entry should have a link str"
-
-            parsed_entries.append(ModuleConfigEntry(channel, link))
-
-        sent = values.get("sent", dict())
-        assert type(sent) == dict, "sent should be a dict of str to list of str"
-
-        for key, val in sent.items():
-            assert type(key) == str, "sent should be a dict of str to list of str"
-            assert type(val) == list, "sent should be a dict of str to list of str"
-
-            for sub_val in val:
-                assert (
-                    type(sub_val) == str
-                ), "sent should be a dict of str to list of str"
-
-            sent[key] = set(val)
-
-        self.entries = parsed_entries
-        self.sent = sent
+    entries: list[ModuleConfigEntry] = []
+    sent: dict[str, set[str]] = {}
 
 
 class ModuleMain(Module):
@@ -158,7 +121,7 @@ class ModuleMain(Module):
                 await self.bot.send_message(channel, "Entry already exists.")
                 return
 
-        self.config.entries.append(ModuleConfigEntry(channel, link))
+        self.config.entries.append(ModuleConfigEntry(channel=channel, link=link))
         self.write_config(self.config)
         await self.bot.send_message(channel, "Entry added.")
 

@@ -10,35 +10,13 @@ if TYPE_CHECKING:
     from core.irc_bot import IrcBot
 
 
-class ModuleConfigEntry:
+class ModuleConfigEntry(Config):
     channel: str
     message: str
 
-    def __init__(self, channel: str, message: str) -> None:
-        self.channel = channel
-        self.message = message
-
 
 class ModuleConfig(Config):
-    patterns: list[ModuleConfigEntry]
-
-    def __init__(self, values: dict[Any, Any]) -> None:
-        patterns = values.get("patterns", [])
-        parsed_patterns: list[ModuleConfigEntry] = []
-        assert type(patterns) == list, "patterns should be a list of dict"
-
-        for val in patterns:
-            assert type(val) == dict, "patterns should be a list of dict"
-
-            channel = val.get("channel", None)
-            assert type(channel) == str, "patterns entry should have a channel str"
-
-            message = val.get("message", None)
-            assert type(message) == str, "patterns entry should have a message str"
-
-            parsed_patterns.append(ModuleConfigEntry(channel, message))
-
-        self.patterns = parsed_patterns
+    patterns: list[ModuleConfigEntry] = []
 
 
 class ModuleMain(Module):
@@ -97,7 +75,7 @@ class ModuleMain(Module):
                 await self.bot.send_message(channel, "Pattern already exists.")
                 return
 
-        self.config.patterns.append(ModuleConfigEntry(channel, message))
+        self.config.patterns.append(ModuleConfigEntry(channel=channel, message=message))
         self.write_config(self.config)
         await self.bot.send_message(channel, "Pattern added.")
 

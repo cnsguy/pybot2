@@ -11,24 +11,8 @@ if TYPE_CHECKING:
 
 
 class ModuleConfig(Config):
-    ignored: list[str]
-    messages: list[str]
-
-    def __init__(self, values: dict[Any, Any]) -> None:
-        ignored = values.get("ignored", [])
-        assert type(ignored) == list, "ignored should be a list of str"
-
-        for val in ignored:
-            assert type(val) == str, "ignored should be a list of str"
-
-        messages = values.get("messages", [])
-        assert type(messages) == list, "messages should be a list of str"
-
-        for val in messages:
-            assert type(val) == str, "messages should be a list of str"
-
-        self.ignored = ignored
-        self.messages = messages
+    ignored: list[str] = []
+    messages: list[str] = []
 
 
 class ModuleMain(Module):
@@ -39,6 +23,7 @@ class ModuleMain(Module):
         super().__init__(name, bot)
         self.register_irc_line_handler("PRIVMSG", self.handle_privmsg)
         self.config = self.read_config(ModuleConfig)
+
         self.message_set = set(self.config.messages)
 
         self.register_irc_command_handler(

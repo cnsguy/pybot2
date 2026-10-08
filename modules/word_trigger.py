@@ -10,46 +10,14 @@ if TYPE_CHECKING:
     from core.irc_bot import IrcBot
 
 
-class ModuleConfigEntry:
+class ModuleConfigEntry(Config):
     sender_pattern: str
     word_pattern: str
     response: str
 
-    def __init__(self, sender_pattern: str, word_pattern: str, response: str) -> None:
-        self.sender_pattern = sender_pattern
-        self.word_pattern = word_pattern
-        self.response = response
-
 
 class ModuleConfig(Config):
-    patterns: list[ModuleConfigEntry]
-
-    def __init__(self, values: dict[Any, Any]) -> None:
-        patterns = values.get("patterns", [])
-        parsed_patterns: list[ModuleConfigEntry] = []
-        assert type(patterns) == list, "patterns should be a list of dict"
-
-        for val in patterns:
-            assert type(val) == dict, "patterns should be a list of dict"
-
-            sender_pattern = val.get("sender_pattern", None)
-            assert (
-                type(sender_pattern) == str
-            ), "patterns entry should have a sender_pattern str"
-
-            word_pattern = val.get("word_pattern", None)
-            assert (
-                type(word_pattern) == str
-            ), "patterns entry should have a word_pattern str"
-
-            response = val.get("response", None)
-            assert type(response) == str, "patterns entry should have a response str"
-
-            parsed_patterns.append(
-                ModuleConfigEntry(sender_pattern, word_pattern, response)
-            )
-
-        self.patterns = parsed_patterns
+    patterns: list[ModuleConfigEntry] = []
 
 
 class ModuleMain(Module):
@@ -121,7 +89,11 @@ class ModuleMain(Module):
                 return
 
         self.config.patterns.append(
-            ModuleConfigEntry(sender_pattern, word_pattern, response)
+            ModuleConfigEntry(
+                sender_pattern=sender_pattern,
+                word_pattern=word_pattern,
+                response=response,
+            )
         )
         self.write_config(self.config)
         await self.bot.send_message(channel, "Pattern added.")

@@ -2,7 +2,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Callable, Awaitable, Optional, Any, TypeVar
 from os.path import join as path_join
 from core.irc_line import IrcLine, IrcSenderUser
-from core.config import Config, read_config, write_config
+from core.config import ConfT, read_config, write_config
+from pydantic import BaseModel
 
 if TYPE_CHECKING:
     from core.irc_bot import IrcBot
@@ -42,9 +43,6 @@ class ModuleCommand:
             return f"{self.name} {self.usage}: {self.description}"
         else:
             return f"{self.name}: {self.description}"
-
-
-ConfT = TypeVar("ConfT", bound=Config)
 
 
 class Module:
