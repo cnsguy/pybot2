@@ -97,7 +97,7 @@ class IrcClient:
         assert self.connection is not None
         self.connection.writer.write(line.encode("u8", "ignore") + b"\r\n")
 
-    async def send_message(self, channel: str, message: str) -> None:
+    def send_message(self, channel: str, message: str) -> None:
         for part in textwrap_wrap(message, width=300):
             self.message_queue.append((channel, part))
 

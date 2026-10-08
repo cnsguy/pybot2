@@ -73,7 +73,7 @@ class ModuleMain(Module):
                     try:
                         parsed = feedparser_parse(entry.link)
                     except Exception as err:
-                        await self.bot.send_message(
+                        self.bot.send_message(
                             entry.channel,
                             f"[ERROR] Failed to parse feed for {entry.link}: {err}",
                         )
@@ -103,9 +103,9 @@ class ModuleMain(Module):
                             if len(part) == 0:
                                 continue
 
-                            await self.bot.send_message(entry.channel, part)
+                            self.bot.send_message(entry.channel, part)
 
-                        await self.bot.send_message(entry.channel, link)
+                        self.bot.send_message(entry.channel, link)
 
         except CancelledError:
             pass
@@ -118,12 +118,12 @@ class ModuleMain(Module):
 
         for entry in self.config.entries:
             if entry.channel == channel and entry.link == link:
-                await self.bot.send_message(channel, "Entry already exists.")
+                self.bot.send_message(channel, "Entry already exists.")
                 return
 
         self.config.entries.append(ModuleConfigEntry(channel=channel, link=link))
         self.write_config(self.config)
-        await self.bot.send_message(channel, "Entry added.")
+        self.bot.send_message(channel, "Entry added.")
 
     async def handle_rss_del(
         self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
@@ -133,18 +133,18 @@ class ModuleMain(Module):
 
         for i, entry in enumerate(self.config.entries):
             if entry.channel == channel and entry.link == link:
-                await self.bot.send_message(channel, "Entry deleted.")
+                self.bot.send_message(channel, "Entry deleted.")
                 del self.config.entries[i]
                 self.write_config(self.config)
                 return
 
-        await self.bot.send_message(channel, "No such entry exists.")
+        self.bot.send_message(channel, "No such entry exists.")
 
     async def handle_rss_list(
         self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
     ) -> None:
         if len(self.config.entries) == 0:
-            await self.bot.send_message(channel, "No RSS entries in the database")
+            self.bot.send_message(channel, "No RSS entries in the database")
 
         for entry in self.config.entries:
-            await self.bot.send_message(channel, f"{entry.channel}: {entry.link}")
+            self.bot.send_message(channel, f"{entry.channel}: {entry.link}")

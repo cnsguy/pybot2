@@ -46,14 +46,14 @@ class ModuleMain(Module):
         module_name = args[0]
 
         if module_name in self.bot.modules:
-            await self.bot.send_message(channel, "Module is already loaded.")
+            self.bot.send_message(channel, "Module is already loaded.")
             return
 
         try:
             self.bot.load_module(module_name)
-            await self.bot.send_message(channel, "Module loaded.")
+            self.bot.send_message(channel, "Module loaded.")
         except ModuleNotFoundError:
-            await self.bot.send_message(channel, "No such module exists")
+            self.bot.send_message(channel, "No such module exists")
 
     async def handle_mod_remove(
         self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
@@ -61,11 +61,11 @@ class ModuleMain(Module):
         module_name = args[0]
 
         if module_name not in self.bot.modules:
-            await self.bot.send_message(channel, "Module is not loaded.")
+            self.bot.send_message(channel, "Module is not loaded.")
             return
 
         self.bot.remove_module(module_name)
-        await self.bot.send_message(channel, "Module removed.")
+        self.bot.send_message(channel, "Module removed.")
 
     async def handle_mod_reload(
         self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]

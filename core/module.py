@@ -111,11 +111,11 @@ class Module:
             return
 
         if command.admin_only and not self.bot.check_admin(sender, tags):
-            await self.bot.send_message(channel, "Unauthorized")
+            self.bot.send_message(channel, "Unauthorized")
             return
 
         if len(args) < command.min_args:
-            await self.bot.send_message(channel, command.help())
+            self.bot.send_message(channel, command.help())
             return
 
         await command.handler(tags, sender, channel, args)

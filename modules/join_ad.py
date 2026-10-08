@@ -62,7 +62,7 @@ class ModuleMain(Module):
         for entry in self.config.patterns:
             if entry.channel == channel:
                 nick = line.sender.nick
-                await self.bot.send_message(nick, entry.message)
+                self.bot.send_message(nick, entry.message)
 
     async def handle_advert_add(
         self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
@@ -72,12 +72,12 @@ class ModuleMain(Module):
 
         for entry in self.config.patterns:
             if entry.channel == channel and entry.message == message:
-                await self.bot.send_message(channel, "Pattern already exists.")
+                self.bot.send_message(channel, "Pattern already exists.")
                 return
 
         self.config.patterns.append(ModuleConfigEntry(channel=channel, message=message))
         self.write_config(self.config)
-        await self.bot.send_message(channel, "Pattern added.")
+        self.bot.send_message(channel, "Pattern added.")
 
     async def handle_advert_del(
         self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
@@ -87,23 +87,21 @@ class ModuleMain(Module):
 
         for i, entry in enumerate(self.config.patterns):
             if entry.channel == channel and entry.message == message:
-                await self.bot.send_message(channel, "Pattern deleted.")
+                self.bot.send_message(channel, "Pattern deleted.")
                 del self.config.patterns[i]
                 self.write_config(self.config)
                 return
 
-        await self.bot.send_message(channel, "No such pattern exists.")
+        self.bot.send_message(channel, "No such pattern exists.")
 
     async def handle_advert_list(
         self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
     ) -> None:
         if len(self.config.patterns) == 0:
-            await self.bot.send_message(
-                channel, "No word trigger entries in the database"
-            )
+            self.bot.send_message(channel, "No word trigger entries in the database")
 
         for entry in self.config.patterns:
-            await self.bot.send_message(
+            self.bot.send_message(
                 channel,
                 f"channel: {entry.channel}, entry: {entry.message}",
             )
