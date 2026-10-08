@@ -79,6 +79,13 @@ class ModuleMain(Module):
             min_args=3,
         )
 
+        self.register_irc_command_handler(
+            "word_trigger_list",
+            self.handle_word_trigger_list,
+            None,
+            "List word trigger patterns",
+        )
+
     async def handle_privmsg(self, line: IrcLine) -> None:
         if not isinstance(line.sender, IrcSenderUser):
             return
@@ -138,3 +145,15 @@ class ModuleMain(Module):
                 return
 
         self.bot.send_message(channel, "No such pattern exists.")
+
+    async def handle_word_trigger_list(
+        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+    ) -> None:
+        if len(self.config.patterns) == 0:
+            self.bot.send_message(channel, "No word trigger entries in the database")
+
+        for entry in self.config.patterns:
+            self.bot.send_message(
+                channel,
+                f"sender: {entry.sender_pattern}, entry: {entry.word_pattern}, response: {entry.response}",
+            )
