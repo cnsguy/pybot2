@@ -16,7 +16,7 @@ IrcCommandHandler = Callable[
 class ModuleCommand:
     name: str
     handler: IrcCommandHandler
-    usage: str
+    usage: Optional[str]
     description: str
     admin_only: bool
     min_args: int
@@ -25,7 +25,7 @@ class ModuleCommand:
         self,
         name: str,
         handler: IrcCommandHandler,
-        usage: str,
+        usage: Optional[str],
         description: str,
         admin_only: bool,
         min_args: int,
@@ -38,7 +38,10 @@ class ModuleCommand:
         self.min_args = min_args
 
     def help(self):
-        return f"{self.name} {self.usage}: {self.description}"
+        if self.usage is not None:
+            return f"{self.name} {self.usage}: {self.description}"
+        else:
+            return f"{self.name}: {self.description}"
 
 
 ConfT = TypeVar("ConfT", bound=Config)
@@ -79,7 +82,7 @@ class Module:
         self,
         command_name: str,
         handler: IrcCommandHandler,
-        usage: str,
+        usage: Optional[str],
         description: str,
         admin_only: bool = False,
         min_args: int = 0,

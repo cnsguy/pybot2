@@ -88,7 +88,7 @@ class ModuleMain(Module):
         self.register_irc_command_handler(
             "rss_list",
             self.handle_rss_list,
-            "",
+            None,
             "List RSS entries",
         )
 
