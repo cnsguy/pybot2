@@ -2,5 +2,5 @@ core/__pycache__
 modules/__pycache__
 .mypy_cache
 data
-.venv
+venv
 config.json
