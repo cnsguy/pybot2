@@ -67,10 +67,14 @@ class ModuleMain(Module):
             channel = line.sender.nick
 
         for entry in self.config.patterns:
-            if re_match(entry.sender_pattern, sender_repr):
-                if re_match(entry.word_pattern, message):
-                    response = re_sub(entry.word_pattern, entry.response, message)
-                    self.bot.send_message(channel, response)
+            try:
+                if re_match(entry.sender_pattern, sender_repr):
+                    if re_match(entry.word_pattern, message):
+                        response = re_sub(entry.word_pattern, entry.response, message)
+                        self.bot.send_message(channel, response)
+
+            except Exception as err:
+                self.bot.send_message(channel, f"Error running word trigger '{entry}': {err}")
 
     async def handle_word_trigger_add(
         self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
