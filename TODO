@@ -12,3 +12,4 @@ TODO
  - uptime monitor
  - reddit scraper
  - remote irc module
+ - smart sed module: check in-memory message log + check if a message matches the pattern + apply the transformation to it
