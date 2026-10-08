@@ -143,7 +143,6 @@ class ModuleMain(Module):
                             await self.bot.send_message(entry.channel, part)
 
                         await self.bot.send_message(entry.channel, link)
-                        await self.bot.send_message(entry.channel, " ")
 
         except CancelledError:
             pass
