@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 . venv/bin/activate
 black main.py core/* modules/*
 mypy --explicit-package-bases .
