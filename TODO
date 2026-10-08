@@ -3,3 +3,8 @@ TODO
   -> so privmsg could have a message.send_reply()
 
  - tests
+
+ - memoserv equivalent except on join
+ - note to self / others
+ - idle rpg
+ - danbooru module
