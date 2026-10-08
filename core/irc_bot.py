@@ -8,6 +8,7 @@ from modules.say import ModuleMain as SayModuleMain
 from modules.help import ModuleMain as HelpModuleMain
 from modules.word_trigger import ModuleMain as WordTriggerModuleMain
 from modules.nick import ModuleMain as NickModuleMain
+from typing import Optional
 
 
 class IrcBot(IrcClient):
@@ -26,13 +27,24 @@ class IrcBot(IrcClient):
         host: str,
         port: int,
         use_ssl: bool,
+        sasl_user: Optional[str],
+        sasl_password: Optional[str],
         module_names: list[str],
         admin_accounts: list[str],
         admin_hosts: list[str],
         command_prefix: str,
         data_directory: str,
     ) -> None:
-        super().__init__(nick, ident, real_name, host, port, use_ssl)
+        super().__init__(
+            nick,
+            ident,
+            real_name,
+            host,
+            port,
+            use_ssl,
+            sasl_user,
+            sasl_password,
+        )
         self.module_names = module_names
         self.admin_accounts = admin_accounts
         self.admin_hosts = admin_hosts

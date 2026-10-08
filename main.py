@@ -42,6 +42,16 @@ class BotConfig(Config):
         use_ssl = values.get("use_ssl", True)
         assert type(use_ssl) == bool, "use_ssl should be a bool"
 
+        sasl_user = values.get("sasl_user", None)
+        assert (
+            type(sasl_user) == str or sasl_user is None
+        ), "sasl_user should be a string or unset"
+
+        sasl_password = values.get("sasl_password", None)
+        assert (
+            type(sasl_password) == str or sasl_password is None
+        ), "sasl_password should be a string or unset"
+
         command_prefix = values.get("command_prefix", ".")
         assert type(command_prefix) == str, "command_prefix should be a str"
 
@@ -70,6 +80,8 @@ class BotConfig(Config):
         self.host = host
         self.port = port
         self.use_ssl = use_ssl
+        self.sasl_user = sasl_user
+        self.sasl_password = sasl_password
         self.command_prefix = command_prefix
         self.admin_hosts = admin_hosts
         self.admin_accounts = admin_accounts
@@ -90,6 +102,8 @@ async def main() -> None:
         config.host,
         config.port,
         config.use_ssl,
+        config.sasl_user,
+        config.sasl_password,
         config.modules,
         config.admin_accounts,
         config.admin_hosts,

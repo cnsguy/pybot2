@@ -3,6 +3,7 @@ from core.irc_line import IrcLine, IrcSenderUser, parse_line
 from typing import Optional, Self
 from ssl import create_default_context as ssl_create_default_context
 from sys import stderr
+from base64 import b64encode
 from asyncio import (
     StreamReader,
     StreamWriter,
@@ -34,9 +35,19 @@ class IrcClient:
     real_name: str
     buf: bytearray
     connection: Optional[Connection]
+    sasl_user: Optional[str]
+    sasl_password: Optional[str]
 
     def __init__(
-        self, nick: str, ident: str, real_name: str, host: str, port: int, use_ssl: bool
+        self,
+        nick: str,
+        ident: str,
+        real_name: str,
+        host: str,
+        port: int,
+        use_ssl: bool,
+        sasl_user: Optional[str],
+        sasl_password: Optional[str],
     ) -> None:
         self.nick = nick
         self.ident = ident
@@ -44,6 +55,8 @@ class IrcClient:
         self.host = host
         self.port = port
         self.use_ssl = use_ssl
+        self.sasl_user = sasl_user
+        self.sasl_password = sasl_password
         self.buf = bytearray()
         self.connection = None
 
@@ -115,7 +128,28 @@ class IrcClient:
                 with await self.connect() as connection:
                     self.connection = connection
                     self.send_line(f"CAP REQ :account-tag")
+                    self.send_line(f"CAP REQ :sasl")
                     self.send_line(f"CAP END")
+
+                    sasl_user = self.sasl_user
+                    sasl_password = self.sasl_password
+
+                    if sasl_user is not None or sasl_password is not None:
+                        assert (
+                            sasl_user is not None
+                        ), "Both sasl_user and sasl_user must be set"
+
+                        assert (
+                            sasl_password is not None
+                        ), "Both sasl_user and sasl_password must be set"
+
+                        auth = (
+                            f"{self.sasl_user}\0{self.sasl_user}\0{self.sasl_password}"
+                        )
+                        encoded = b64encode(auth.encode()).decode()
+                        self.send_line(f"AUTHENTICATE PLAIN")
+                        self.send_line(f"AUTHENTICATE {encoded}")
+
                     self.send_line(f"USER {self.ident} 0 * :{self.real_name}")
                     self.send_line(f"NICK {self.nick}")
                     await asyncio_gather(self.run_recv(), self.run_ping())
