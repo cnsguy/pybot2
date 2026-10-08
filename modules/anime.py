@@ -41,15 +41,7 @@ def scrape_posts(tags: str) -> list[str]:
         if href.startswith("/posts/") and post_id.isdigit():
             links.append(f"{BASE_URL}/posts/{post_id}")
 
-    seen: set[str] = set()
-    unique: list[str] = []
-
-    for link in links:
-        if link not in seen:
-            seen.add(link)
-            unique.append(link)
-
-    return unique
+    return list(set(links))
 
 
 def scrape_direct_image(post_url: str) -> str | None:
@@ -57,19 +49,12 @@ def scrape_direct_image(post_url: str) -> str | None:
     resp = requests_get(post_url, headers=headers, timeout=TIMEOUT)
     resp.raise_for_status()
     soup = BeautifulSoup(resp.text, "html.parser")
+    tag = soup.find("meta", attrs={"property": "og:image"})
 
-    for prop in ("og:image", "twitter:image"):
-        tag = soup.find("meta", attrs={"property": prop})
-
-        if tag is None:
-            tag = soup.find("meta", attrs={"name": prop})
-
-        if tag is not None:
-            content = tag.get("content", None)
-            if isinstance(content, str) and content.startswith("http"):
-                return content
-
-    return None
+    if tag is not None:
+        return str(tag.get("content", None))
+    else:
+        return None
 
 
 class ModuleMain(Module):
@@ -102,8 +87,6 @@ class ModuleMain(Module):
         except Exception as err:
             self.bot.send_message(channel, f"Danbooru search failed: {err}")
             return
-
-        print(query)
 
         if not posts:
             search_url = f"{BASE_URL}/posts?tags={quote_plus(query)}"
