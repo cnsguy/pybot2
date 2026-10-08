@@ -3,7 +3,6 @@ from core.irc_line import IrcLine, IrcSenderUser
 from core.config import Config, ConfT, read_config, write_config
 from typing import TYPE_CHECKING, Callable, Awaitable, Optional, Any, TypeVar
 from os.path import join as path_join
-from pydantic import BaseModel
 
 if TYPE_CHECKING:
     from core.irc_bot import IrcBot
