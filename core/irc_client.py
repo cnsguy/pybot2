@@ -38,6 +38,7 @@ class IrcClient:
     connection: Optional[Connection]
     sasl_user: Optional[str]
     sasl_password: Optional[str]
+    message_queue: list[tuple[str, str]]
 
     def __init__(
         self,
@@ -60,6 +61,7 @@ class IrcClient:
         self.sasl_password = sasl_password
         self.buf = bytearray()
         self.connection = None
+        self.message_queue = []
 
     async def connect(self) -> Connection:
         if self.use_ssl:
@@ -97,12 +99,19 @@ class IrcClient:
 
     async def send_message(self, channel: str, message: str) -> None:
         for part in textwrap_wrap(message, width=450):
-            self.send_line(f"PRIVMSG {channel} :{part}")
-            await asyncio_sleep(1)
+            self.message_queue.append((channel, part))
 
     # Only used in IrcBot
     async def handle_irc_line(self, line: IrcLine) -> None:
         pass
+
+    async def run_message_queue(self) -> None:
+        while True:
+            if len(self.message_queue) > 0:
+                channel, message = self.message_queue.pop(0)
+                self.send_line(f"PRIVMSG {channel} :{message}")
+
+            await asyncio_sleep(1)
 
     async def run_recv(self) -> None:
         while True:
@@ -158,7 +167,9 @@ class IrcClient:
 
                     self.send_line(f"USER {self.ident} 0 * :{self.real_name}")
                     self.send_line(f"NICK {self.nick}")
-                    await asyncio_gather(self.run_recv(), self.run_ping())
+                    await asyncio_gather(
+                        self.run_recv(), self.run_ping(), self.run_message_queue()
+                    )
             except ConnectionResetError:
                 print("[ERROR] Connection reset by peer", file=stderr)
             except TimeoutError:
