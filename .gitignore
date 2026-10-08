@@ -4,3 +4,4 @@ modules/__pycache__
 data
 venv
 config.json
+tauri-config.json
