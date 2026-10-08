@@ -1,3 +1,5 @@
 TODO
  - higher level irc events
   -> so privmsg could have a message.send_reply()
+
+ - tests
