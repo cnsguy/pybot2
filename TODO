@@ -10,3 +10,4 @@ TODO
    - https://docs.python.org/3/library/asyncio-exceptions.html#asyncio.CancelledError
 
  - module module
+  -> try/except ValueError
