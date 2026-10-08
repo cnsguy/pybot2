@@ -2,12 +2,6 @@ from __future__ import annotations
 from core.irc_client import IrcClient
 from core.irc_line import IrcLine, IrcSenderUser
 from core.module import Module
-from modules.talkbot import ModuleMain as TalkbotModuleMain
-from modules.channel import ModuleMain as ChannelModuleMain
-from modules.say import ModuleMain as SayModuleMain
-from modules.help import ModuleMain as HelpModuleMain
-from modules.word_trigger import ModuleMain as WordTriggerModuleMain
-from modules.nick import ModuleMain as NickModuleMain
 from typing import Optional, cast
 from sys import modules as sys_modules
 
