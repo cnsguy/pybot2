@@ -33,13 +33,13 @@ class ModuleConfig(Config):
             assert type(val) == dict, "patterns should be a list of dict"
 
             sender_pattern = val.get("sender_pattern", None)
-            assert type(val) == str, "patterns entry should have a sender_pattern str"
+            assert type(sender_pattern) == str, "patterns entry should have a sender_pattern str"
 
             word_pattern = val.get("word_pattern", None)
-            assert type(val) == str, "patterns entry should have a word_pattern str"
+            assert type(word_pattern) == str, "patterns entry should have a word_pattern str"
 
             response = val.get("response", None)
-            assert type(val) == str, "patterns entry should have a response str"
+            assert type(response) == str, "patterns entry should have a response str"
 
             parsed_patterns.append(
                 ModuleConfigEntry(sender_pattern, word_pattern, response)
