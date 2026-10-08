@@ -1,6 +1,6 @@
 from __future__ import annotations
 from core.irc_line import IrcLine, IrcSenderUser
-from core.config import ConfT, read_config, write_config
+from core.config import Config, ConfT, read_config, write_config
 from typing import TYPE_CHECKING, Callable, Awaitable, Optional, Any, TypeVar
 from os.path import join as path_join
 from pydantic import BaseModel
@@ -72,7 +72,7 @@ class Module:
         file_path = self.config_file_path()
         return read_config(file_path, config_class)
 
-    def write_config(self, config: ConfT) -> None:
+    def write_config(self, config: Config) -> None:
         file_path = self.config_file_path()
         write_config(file_path, config)
 

@@ -70,11 +70,15 @@ class ModuleMain(Module):
             try:
                 if re_match(entry.sender_pattern, sender_repr):
                     for matching in re_finditer(entry.word_pattern, message):
-                        response = re_sub(entry.word_pattern, entry.response, matching.group(0))
+                        response = re_sub(
+                            entry.word_pattern, entry.response, matching.group(0)
+                        )
                         self.bot.send_message(channel, response)
 
             except Exception as err:
-                self.bot.send_message(channel, f"Error running word trigger '{entry}': {err}")
+                self.bot.send_message(
+                    channel, f"Error running word trigger '{entry}': {err}"
+                )
 
     async def handle_word_trigger_add(
         self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
