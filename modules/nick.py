@@ -21,7 +21,11 @@ class ModuleMain(Module):
         )
 
     async def handle_nick(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         nick = args[0]
         self.bot.send_line(f"NICK {nick}")

@@ -661,7 +661,11 @@ class ModuleMain(Module):
         return messages
 
     async def handle_rpg_start(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         player = new_player()
         self.config.players[sender.nick] = player
@@ -681,7 +685,11 @@ class ModuleMain(Module):
         )
 
     async def handle_rpg_status(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         player = self.get_player(sender.nick, channel)
 
@@ -692,7 +700,11 @@ class ModuleMain(Module):
             self.bot.send_message(channel, line)
 
     async def handle_rpg_explore(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         player = self.get_player(sender.nick, channel)
 
@@ -721,7 +733,11 @@ class ModuleMain(Module):
         )
 
     async def handle_rpg_attack(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         player = self.get_player(sender.nick, channel)
 
@@ -760,7 +776,11 @@ class ModuleMain(Module):
             self.bot.send_message(channel, message)
 
     async def handle_rpg_cast(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         player = self.get_player(sender.nick, channel)
 
@@ -905,7 +925,11 @@ class ModuleMain(Module):
             )
 
     async def handle_rpg_heal(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         player = self.get_player(sender.nick, channel)
 
@@ -928,7 +952,11 @@ class ModuleMain(Module):
         self.bot.send_message(channel, f"You drink a Potion and restore {healed} HP.")
 
     async def handle_rpg_spells(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         player = self.get_player(sender.nick, channel)
 
@@ -951,7 +979,11 @@ class ModuleMain(Module):
         self.bot.send_message(channel, "Spells: " + " | ".join(spells))
 
     async def handle_rpg_inventory(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         player = self.get_player(sender.nick, channel)
 
@@ -976,7 +1008,11 @@ class ModuleMain(Module):
         )
 
     async def handle_rpg_equip(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         player = self.get_player(sender.nick, channel)
 
@@ -1023,7 +1059,11 @@ class ModuleMain(Module):
         self.write_config(self.config)
 
     async def handle_rpg_unequip(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         player = self.get_player(sender.nick, channel)
 
@@ -1057,7 +1097,11 @@ class ModuleMain(Module):
         self.bot.send_message(channel, f"You unequip the {item_name}.")
 
     async def handle_rpg_shop(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         for category, label in SHOP_CATEGORIES:
             items = [item for item in ITEM_CATALOG if item.category == category]
@@ -1070,7 +1114,11 @@ class ModuleMain(Module):
             self.bot.send_message(channel, f"{label}: {listing}")
 
     async def handle_rpg_buy(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         player = self.get_player(sender.nick, channel)
 
@@ -1112,7 +1160,11 @@ class ModuleMain(Module):
         )
 
     async def handle_rpg_sell(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         player = self.get_player(sender.nick, channel)
 
@@ -1137,7 +1189,11 @@ class ModuleMain(Module):
         )
 
     async def handle_rpg_use(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         player = self.get_player(sender.nick, channel)
 

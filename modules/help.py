@@ -19,7 +19,11 @@ class ModuleMain(Module):
         )
 
     async def handle_help(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         command_name = args[0] if len(args) > 0 else None
 

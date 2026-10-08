@@ -86,7 +86,11 @@ class ModuleMain(Module):
             self.write_config(self.config)
 
     async def handle_talkbot_ignore(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         pattern = args[0]
 
@@ -99,7 +103,11 @@ class ModuleMain(Module):
         self.bot.send_message(channel, "Pattern added.")
 
     async def handle_talkbot_unignore(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         pattern = args[0]
 
@@ -112,7 +120,11 @@ class ModuleMain(Module):
         self.bot.send_message(channel, "Pattern deleted.")
 
     async def handle_talkbot_dump(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         json = dump_config(self.config)
 

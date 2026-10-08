@@ -42,7 +42,11 @@ class ModuleMain(Module):
             self.bot.send_line(f"JOIN {channel}")
 
     async def handle_join(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         target_channel = args[0]
         self.bot.send_line(f"JOIN {target_channel}")
@@ -53,7 +57,11 @@ class ModuleMain(Module):
         self.write_config(self.config)
 
     async def handle_part(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         target_channel = channel if len(args) == 0 else args[0]
         self.bot.send_line(f"PART {target_channel}")

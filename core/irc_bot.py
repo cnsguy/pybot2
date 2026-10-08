@@ -51,7 +51,7 @@ class IrcBot(IrcClient):
     def is_admin(self, account: str) -> bool:
         return account in self.admin_accounts
 
-    def check_admin(self, sender: IrcSenderUser, tags: dict[str, str]) -> bool:
+    def check_admin(self, sender: IrcSenderUser, tags: dict[str, str | None]) -> bool:
         account = tags.get("account", None)
 
         if account in self.admin_accounts:

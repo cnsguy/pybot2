@@ -34,14 +34,14 @@ class IrcSenderServer(IrcSender):
 
 
 class IrcLine:
-    tags: dict[str, str]
+    tags: dict[str, str | None]
     sender: Optional[IrcSenderUser | IrcSenderServer]
     cmd: str
     args: list[str]
 
     def __init__(
         self,
-        tags: dict[str, str],
+        tags: dict[str, str | None],
         sender: Optional[IrcSenderUser | IrcSenderServer],
         cmd: str,
         args: list[str],
@@ -55,16 +55,43 @@ class IrcLine:
         return f"{self.tags} {self.sender} {self.cmd} {self.args}"
 
 
+def unescape_tag_value(val: str) -> str:
+    out: list[str] = []
+    in_escape = False
+    escape_map = {
+        ":": ";",
+        "s": " ",
+        "\\": "\\",
+        "r": "\r",
+        "n": "\n",
+    }
+
+    for ch in val:
+        if in_escape:
+            out.append(escape_map.get(ch, ch))
+            in_escape = False
+        elif ch == "\\":
+            in_escape = True
+        else:
+            out.append(ch)
+
+    return "".join(out)
+
+
 def parse_line(line: str) -> IrcLine:
     splt = line.split(" ")
-    tags = {}
+    tags: dict[str, str | None] = {}
 
     if splt[0].startswith("@"):
         tagstring = splt.pop(0)[1:]
 
-        for tag in tagstring.split(","):
-            key, val = tag.split("=")
-            tags[key] = val
+        for tag in tagstring.split(";"):
+            key, sep, val = tag.partition("=")
+
+            if sep:
+                tags[key] = unescape_tag_value(val)
+            else:
+                tags[key] = None
 
     sender: Optional[IrcSenderUser | IrcSenderServer]
 

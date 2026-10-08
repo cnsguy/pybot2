@@ -41,7 +41,11 @@ class ModuleMain(Module):
         )
 
     async def handle_mod_load(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         module_name = args[0]
 
@@ -56,7 +60,11 @@ class ModuleMain(Module):
             self.bot.send_message(channel, "No such module exists")
 
     async def handle_mod_remove(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         module_name = args[0]
 
@@ -68,7 +76,11 @@ class ModuleMain(Module):
         self.bot.send_message(channel, "Module removed.")
 
     async def handle_mod_reload(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         await self.handle_mod_remove(tags, sender, channel, args)
         await self.handle_mod_load(tags, sender, channel, args)

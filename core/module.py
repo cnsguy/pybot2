@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 IrcLineHandler = Callable[[IrcLine], Awaitable[None]]
 IrcCommandHandler = Callable[
-    [dict[str, str], IrcSenderUser, str, list[str]], Awaitable[None]
+    [dict[str, str | None], IrcSenderUser, str, list[str]], Awaitable[None]
 ]
 
 
@@ -99,7 +99,7 @@ class Module:
 
     async def handle_irc_command(
         self,
-        tags: dict[str, str],
+        tags: dict[str, str | None],
         sender: IrcSenderUser,
         command_name: str,
         channel: str,

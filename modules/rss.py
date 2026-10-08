@@ -111,7 +111,11 @@ class ModuleMain(Module):
             pass
 
     async def handle_rss_add(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         channel = args[0]
         link = args[1]
@@ -126,7 +130,11 @@ class ModuleMain(Module):
         self.bot.send_message(channel, "Entry added.")
 
     async def handle_rss_del(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         channel = args[0]
         link = args[1]
@@ -141,7 +149,11 @@ class ModuleMain(Module):
         self.bot.send_message(channel, "No such entry exists.")
 
     async def handle_rss_list(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         if len(self.config.entries) == 0:
             self.bot.send_message(channel, "No RSS entries in the database")

@@ -81,7 +81,11 @@ class ModuleMain(Module):
                 )
 
     async def handle_word_trigger_add(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         sender_pattern = args[0]
         word_pattern = args[1]
@@ -107,7 +111,11 @@ class ModuleMain(Module):
         self.bot.send_message(channel, "Pattern added.")
 
     async def handle_word_trigger_del(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         sender_pattern = args[0]
         word_pattern = args[1]
@@ -127,7 +135,11 @@ class ModuleMain(Module):
         self.bot.send_message(channel, "No such pattern exists.")
 
     async def handle_word_trigger_list(
-        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+        self,
+        tags: dict[str, str | None],
+        sender: IrcSenderUser,
+        channel: str,
+        args: list[str],
     ) -> None:
         if len(self.config.patterns) == 0:
             self.bot.send_message(channel, "No word trigger entries in the database")
