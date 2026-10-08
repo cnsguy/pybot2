@@ -65,8 +65,8 @@ class ModuleMain(Module):
             await self.bot.send_message(channel, "Module is not loaded.")
             return
 
-        await self.bot.remove_module(module_name)
-        self.bot.send_message(channel, "Module removed.")
+        self.bot.remove_module(module_name)
+        await self.bot.send_message(channel, "Module removed.")
 
     async def handle_mod_reload(
         self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
