@@ -2,9 +2,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 from core.module import Module
 from core.irc_line import IrcLine, IrcSenderUser
-from core.config import Config
+from core.config import Config, dump_config
 from random import choice
 from re import match as re_match
+from requests import post as requests_post
 
 if TYPE_CHECKING:
     from core.irc_bot import IrcBot
@@ -42,6 +43,13 @@ class ModuleMain(Module):
             "Don't trigger talkbot for a given user regex",
             admin_only=True,
             min_args=1,
+        )
+
+        self.register_irc_command_handler(
+            "talkbot_dump",
+            self.handle_talkbot_dump,
+            "-",
+            "Upload talkbot db to x0.at",
         )
 
     async def handle_privmsg(self, line: IrcLine) -> None:
@@ -102,3 +110,25 @@ class ModuleMain(Module):
         self.config.ignored.remove(pattern)
         self.write_config(self.config)
         self.bot.send_message(channel, "Pattern deleted.")
+
+    async def handle_talkbot_dump(
+        self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
+    ) -> None:
+        json = dump_config(self.config)
+
+        try:
+            resp = requests_post(
+                "https://x0.at",
+                files={
+                    "file": (
+                        "talkbot.json",
+                        json.encode("u8", "ignore"),
+                        "application/json",
+                    )
+                },
+            )
+            resp.raise_for_status()
+            url = resp.text.strip()
+            self.bot.send_message(channel, f"Uploaded to: {url}")
+        except Exception as err:
+            self.bot.send_message(channel, f"Failed to upload: {err}")

@@ -44,10 +44,12 @@ def read_config(file_path: str, config_class: type[ConfT]) -> ConfT:
         return obj
 
 
+def dump_config(config: ConfT) -> str:
+    return json_dumps(config.__dict__, sort_keys=True, indent=4, cls=ConfigEncoder)
+
+
 def write_config(file_path: str, config: ConfT) -> None:
     create_config_path(file_path)
 
     with open(file_path, "w") as f:
-        f.write(
-            json_dumps(config.__dict__, sort_keys=True, indent=4, cls=ConfigEncoder)
-        )
+        f.write(dump_config(config))
