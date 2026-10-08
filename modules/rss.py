@@ -184,5 +184,8 @@ class ModuleMain(Module):
     async def handle_rss_list(
         self, tags: dict[str, str], sender: IrcSenderUser, channel: str, args: list[str]
     ) -> None:
+        if len(self.config.entries) == 0:
+            self.bot.send_message(channel, "No RSS entries in the database")
+
         for entry in self.config.entries:
             self.bot.send_message(channel, f"{entry.channel}: {entry.link}")
