@@ -42,7 +42,7 @@ def read_config(file_path: str, config_class: type[ConfT]) -> ConfT:
 
 
 def dump_config(config: Config) -> str:
-    return json_dumps(config.__dict__, sort_keys=True, indent=4, cls=ConfigEncoder)
+    return json_dumps(config.model_dump(), sort_keys=True, indent=4, cls=ConfigEncoder)
 
 
 def write_config(file_path: str, config: Config) -> None:
